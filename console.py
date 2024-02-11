@@ -73,14 +73,14 @@ class HBNBCommand(cmd.Cmd):
 
     def do_all(self, line):
         """Prints all string representation of all instances"""
-        if line != "":
+       if line != "":
             phrase = line.split(' ')
             if phrase[0] not in storage.classes():
                 print("** class doesn't exist **")
             else:
                 k = [str(obj) for key, obj in storage.all().items()
                      if type(obj).__name__ == phrase[0]]
-                print(k)
+                print(k) 
         else:
             k = [str(obj) for key, obj in storage.all().items()]
             print(k)
