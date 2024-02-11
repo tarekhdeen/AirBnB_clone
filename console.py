@@ -103,24 +103,33 @@ class HBNBCommand(cmd.Cmd):
             print("** class doesn't exist **")
         elif not uid:
             print("** instance id missing **")
-        elif uid not in storage.all():
-            print("** no instance found **")
-        elif not attribute:
-            print("** attribute name missing **")
-        elif not value:
-            print("** value missing **")
-        elif attribute in ["id", "created_at", "updated_at"]:
-            return
-        elif not hasattr(storage.all()[uid], attribute):
-            return
-
-        obj = storage.all()[uid]
-        attr_type = type(getattr(obj, attribute))
-        try:
-            setattr(obj, attribute, attr_type(value))
-            obj.save()
-        except (ValueError, TypeError):
-            pass
+        else:
+            clu = f"{classname}.{uid}"
+            if clu not in storage.all():
+                print("** no instance found **")
+            elif not attribute:
+                print("** attribute name missing **")
+            elif not value:
+                print("** value missing **")
+            else:
+                cast = None
+                if not re.search('^".*"$', value):
+                    if '.' in value:
+                        cast = float
+                    else:
+                        cast = int
+                else:
+                    value = value.replace('"', '')
+                attributes = storage.attributes()[classname]
+                if attribute in attributes:
+                    value = attributes[attribute](value)
+                elif cast:
+                    try:
+                        value = cast(value)
+                    except ValueError:
+                        pass
+                setattr(storage.all()[clu], attribute, value)
+                storage.all()[clu].save()
 
 
 if __name__ == '__main__':
